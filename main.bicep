@@ -209,16 +209,12 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
       }
     ]
   }
-  dependsOn: [
-    virtualNetwork
-    loadBalancer
-  ]
 }
 
 resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-03-01' = {
   name: availabilitySetName
   location: location
-  sku {
+  sku: {
     name: 'Aligned'
   }
   properties: {
