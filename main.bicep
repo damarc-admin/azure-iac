@@ -1,5 +1,5 @@
 @description('Location for all resources')
-param location string = resourceGroup().location
+param location string = 'canadacentral'
 
 @description('Username for the virtual machine')
 param adminUsername string = 'azureuser'
@@ -18,7 +18,7 @@ var publicIpAddressName = '${loadBalancerPrefix}-pip'
 var vnetName = '${loadBalancerPrefix}-vnet'
 var subnetName = 'default'
 
-var vmSize = 'Standard_B2s'
+var vmSize = 'Standard_D2s_v3'
 
 var appServicePort = 5000
 

@@ -3,7 +3,7 @@
 $ErrorActionPreference = "Stop"
 
 $ResourceGroup = "project-tracker-rg"
-$Location = "eastus"
+$Location = "canadacentral"
 $DeploymentName = "project-tracker-deployment"
 $ScriptDir = $PSScriptRoot
 
@@ -36,7 +36,7 @@ az deployment group create `
 Write-Host "Getting public IP..." -ForegroundColor Cyan
 $publicIp = az network public-ip show `
     --resource-group $ResourceGroup `
-    --name project-tracker-lb-pip `
+    --name project-tracker-pip `
     --query ipAddress `
     --output tsv
 

@@ -3,7 +3,7 @@
 set -e
 
 RESOURCE_GROUP="project-tracker-rg"
-LOCATION="eastus"
+LOCATION="canadacentral"
 DEPLOYMENT_NAME="project-tracker-deployment"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -25,7 +25,7 @@ az deployment group create \
 echo "Getting public IP..."
 PUBLIC_IP=$(az network public-ip show \
     --resource-group "$RESOURCE_GROUP" \
-    --name project-tracker-lb-pip \
+    --name project-tracker-pip \
     --query ipAddress \
     --output tsv)
 
