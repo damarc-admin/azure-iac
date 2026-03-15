@@ -35,7 +35,7 @@ cd /opt
 git clone https://github.com/damarc-admin/project-tracker.git --branch onboard --single-branch project-tracker
 
 cd /opt/project-tracker
-pip3 install -r requirements.txt
+pip3 install --break-system-packages --ignore-installed blinker -r requirements.txt
 
 cat > /opt/project-tracker/start.sh << 'SCRIPTEOF'
 #!/bin/bash
