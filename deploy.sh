@@ -17,7 +17,10 @@ if [ -n "$EXISTING_RG" ]; then
     if [ "$RG_LOCATION" != "$LOCATION" ]; then
         echo "Deleting resource group in wrong location ($RG_LOCATION)..."
         az group delete --name "$RESOURCE_GROUP" --yes --no-wait
-        sleep 5
+        sleep 10
+    else
+        echo "Deleting existing public IP if exists..."
+        az network public-ip delete --resource-group "$RESOURCE_GROUP" --name project-tracker-pip 2>/dev/null || true
     fi
 fi
 

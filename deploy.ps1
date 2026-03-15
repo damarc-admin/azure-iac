@@ -25,7 +25,10 @@ if ($existingRg) {
     if ($rgLocation -ne $Location) {
         Write-Host "Deleting resource group in wrong location ($rgLocation)..." -ForegroundColor Yellow
         az group delete --name $ResourceGroup --yes --no-wait
-        Start-Sleep -Seconds 5
+        Start-Sleep -Seconds 10
+    } else {
+        Write-Host "Deleting existing public IP if exists..." -ForegroundColor Cyan
+        az network public-ip delete --resource-group $ResourceGroup --name project-tracker-pip 2>$null
     }
 }
 

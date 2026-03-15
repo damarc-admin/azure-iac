@@ -13,9 +13,6 @@
     },
     "loadBalancerPrefix": {
       "value": "project-tracker"
-    },
-    "existingPublicIpId": {
-      "value": "/subscriptions/ffb624db-778d-4b1a-b836-1b01b387611e/resourceGroups/project-tracker-rg/providers/Microsoft.Network/publicIPAddresses/project-tracker-pip"
     }
   }
 }
