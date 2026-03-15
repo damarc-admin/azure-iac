@@ -165,6 +165,12 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
       {
         name: 'HTTPRule'
         properties: {
+          frontendIPConfiguration: {
+            id: '${loadBalancer.id}/frontendIPConfigurations/LoadBalancerFrontEnd'
+          }
+          backendAddressPool: {
+            id: '${loadBalancer.id}/backendAddressPools/BackendPool1'
+          }
           protocol: 'Tcp'
           frontendPort: 80
           backendPort: appServicePort
@@ -202,7 +208,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
           }
           loadBalancerBackendAddressPools: [
             {
-              id: loadBalancer.properties.backendAddressPools[0].id
+              id: '${loadBalancer.id}/backendAddressPools/BackendPool1'
             }
           ]
         }
@@ -242,7 +248,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       imageReference: {
         publisher: 'Canonical'
         offer: 'UbuntuServer'
-        sku: 'ubuntu-24_04-lts'
+        sku: '22.04-LTS'
         version: 'latest'
       }
       osDisk: {
