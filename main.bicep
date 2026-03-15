@@ -11,6 +11,9 @@ param adminPassword string
 @description('Prefix for the load balancer')
 param loadBalancerPrefix string = 'project-tracker'
 
+@description('Existing Public IP Resource ID to reuse (optional)')
+param existingPublicIpId string = ''
+
 var virtualMachineName = '${loadBalancerPrefix}-vm'
 var networkInterfaceName = '${virtualMachineName}-nic'
 var networkSecurityGroupName = '${virtualMachineName}-nsg'
@@ -123,7 +126,9 @@ resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2023-04-0
   }
 }
 
-resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
+var useExistingPublicIp = !empty(existingPublicIpId)
+
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-04-01' = if (!useExistingPublicIp) {
   name: publicIpAddressName
   location: location
   properties: {
@@ -147,7 +152,7 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: publicIpAddress.id
+            id: useExistingPublicIp ? existingPublicIpId : publicIpAddress.id
           }
           subnet: {
             id: virtualNetwork.properties.subnets[0].id
