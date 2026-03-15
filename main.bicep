@@ -165,12 +165,6 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
       {
         name: 'HTTPRule'
         properties: {
-          frontendIPConfiguration: {
-            id: '${loadBalancer.id}/frontendIPConfigurations/LoadBalancerFrontEnd'
-          }
-          backendAddressPool: {
-            id: '${loadBalancer.id}/backendAddressPools/BackendPool1'
-          }
           protocol: 'Tcp'
           frontendPort: 80
           backendPort: appServicePort
@@ -206,11 +200,6 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
           subnet: {
             id: virtualNetwork.properties.subnets[0].id
           }
-          loadBalancerBackendAddressPools: [
-            {
-              id: '${loadBalancer.id}/backendAddressPools/BackendPool1'
-            }
-          ]
         }
       }
     ]
