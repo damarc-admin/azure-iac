@@ -27,13 +27,13 @@ var installScript = '''
 set -e
 
 apt-get update
-apt-get install -y python3 python3-pip git
+apt-get install -y python3 python3-venv python3-pip git
 
 cd /opt
 git clone https://github.com/damarc-admin/project-tracker.git --branch onboard --single-branch project-tracker
 
 cd /opt/project-tracker
-pip3 install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 cat > /opt/project-tracker/start.sh << 'SCRIPTEOF'
 #!/bin/bash
@@ -159,9 +159,6 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
       id: networkSecurityGroup.id
     }
   }
-  dependsOn: [
-    networkSecurityGroup
-  ]
 }
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
