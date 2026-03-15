@@ -1,20 +1,18 @@
 # Azure IaC - Project Tracker Deployment
 
-This project contains Infrastructure as Code (IaC) using Azure Bicep to deploy a Flask-based Project Tracker application on an Azure Virtual Machine with a public Load Balancer.
+This project contains Infrastructure as Code (IaC) using Azure Bicep to deploy a Flask-based Project Tracker application on an Azure Virtual Machine with a public IP.
 
 ## Architecture
 
 ```
 Internet
     |
-    | (port 80)
+    | (port 5000)
     v
 +------------------+
-|  Load Balancer  |  <-- project-tracker-lb
-|  (Public IP)    |
+|  Public IP      |  <-- project-tracker-pip
 +--------+---------+
          |
-         | (port 5000)
          v
 +------------------+
 | Virtual Machine  |  <-- project-tracker-vm (Ubuntu 22.04)
@@ -31,8 +29,7 @@ Internet
 | Resource | Name | Description |
 |----------|------|-------------|
 | Virtual Machine | `project-tracker-vm` | 2 vCPU, 4GB RAM, Ubuntu 22.04 LTS |
-| Load Balancer | `project-tracker-lb` | Basic SKU, public |
-| Public IP | `project-tracker-lb-pip` | Dynamic IP |
+| Public IP | `project-tracker-pip` | Dynamic IP attached to NIC |
 | Virtual Network | `project-tracker-vnet` | 10.0.0.0/16 |
 | Subnet | `default` | 10.0.0.0/24 |
 | NSG | `project-tracker-vm-nsg` | Allows SSH (22), HTTP (5000) |

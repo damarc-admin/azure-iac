@@ -44,4 +44,4 @@ Write-Host ""
 Write-Host "===================================" -ForegroundColor Green
 Write-Host "Deployment Complete!" -ForegroundColor Green
 Write-Host "===================================" -ForegroundColor Green
-Write-Host "Access the application at: http://$publicIp" -ForegroundColor Cyan
+Write-Host "Access the application at: http://$publicIp`:5000" -ForegroundColor Cyan

@@ -14,9 +14,7 @@ param loadBalancerPrefix string = 'project-tracker'
 var virtualMachineName = '${loadBalancerPrefix}-vm'
 var networkInterfaceName = '${virtualMachineName}-nic'
 var networkSecurityGroupName = '${virtualMachineName}-nsg'
-var publicIpAddressName = '${loadBalancerPrefix}-lb-pip'
-var loadBalancerName = '${loadBalancerPrefix}-lb'
-var availabilitySetName = '${loadBalancerPrefix}-as'
+var publicIpAddressName = '${loadBalancerPrefix}-pip'
 var vnetName = '${loadBalancerPrefix}-vnet'
 var subnetName = 'default'
 
@@ -139,55 +137,6 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
   }
 }
 
-resource loadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
-  name: loadBalancerName
-  location: location
-  sku: {
-    name: 'Basic'
-  }
-  properties: {
-    frontendIPConfigurations: [
-      {
-        name: 'LoadBalancerFrontEnd'
-        properties: {
-          publicIPAddress: {
-            id: publicIpAddress.id
-          }
-        }
-      }
-    ]
-    backendAddressPools: [
-      {
-        name: 'BackendPool1'
-      }
-    ]
-    loadBalancingRules: [
-      {
-        name: 'HTTPRule'
-        properties: {
-          protocol: 'Tcp'
-          frontendPort: 80
-          backendPort: appServicePort
-          enableFloatingIP: false
-          idleTimeoutInMinutes: 5
-          loadDistribution: 'Default'
-        }
-      }
-    ]
-    probes: [
-      {
-        name: 'HTTPProbe'
-        properties: {
-          protocol: 'Tcp'
-          port: appServicePort
-          intervalInSeconds: 15
-          numberOfProbes: 3
-        }
-      }
-    ]
-  }
-}
-
 resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   name: networkInterfaceName
   location: location
@@ -197,24 +146,15 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
+          publicIPAddress: {
+            id: publicIpAddress.id
+          }
           subnet: {
             id: virtualNetwork.properties.subnets[0].id
           }
         }
       }
     ]
-  }
-}
-
-resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-03-01' = {
-  name: availabilitySetName
-  location: location
-  sku: {
-    name: 'Aligned'
-  }
-  properties: {
-    platformFaultDomainCount: 2
-    platformUpdateDomainCount: 5
   }
 }
 
@@ -225,9 +165,6 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     hardwareProfile: {
       vmSize: vmSize
     }
-    availabilitySet: {
-      id: availabilitySet.id
-    }
     osProfile: {
       computerName: virtualMachineName
       adminUsername: adminUsername
@@ -236,8 +173,8 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
     storageProfile: {
       imageReference: {
         publisher: 'Canonical'
-        offer: 'UbuntuServer'
-        sku: '22.04-LTS'
+        offer: '0001-com-ubuntu-server-jammy'
+        sku: '22_04-lts'
         version: 'latest'
       }
       osDisk: {
