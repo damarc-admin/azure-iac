@@ -38,7 +38,7 @@ python3 -m pip install -r requirements.txt
 cat > /opt/project-tracker/start.sh << 'SCRIPTEOF'
 #!/bin/bash
 cd /opt/project-tracker
-python3 app.py
+python3 --bind 0.0.0.0 app.py
 SCRIPTEOF
 chmod +x /opt/project-tracker/start.sh
 
