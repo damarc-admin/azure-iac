@@ -27,13 +27,15 @@ var installScript = '''
 set -e
 
 apt-get update
-apt-get install -y python3 python3-venv python3-pip git
+apt-get install -y python3 git curl
+
+curl -sS https://bootstrap.pypa.io/get-pip.py | python3
 
 cd /opt
 git clone https://github.com/damarc-admin/project-tracker.git --branch onboard --single-branch project-tracker
 
 cd /opt/project-tracker
-python3 -m pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 cat > /opt/project-tracker/start.sh << 'SCRIPTEOF'
 #!/bin/bash
