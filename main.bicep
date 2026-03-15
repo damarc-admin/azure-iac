@@ -155,7 +155,13 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2023-04-01' = {
         }
       }
     ]
+    networkSecurityGroup: {
+      id: networkSecurityGroup.id
+    }
   }
+  dependsOn: [
+    networkSecurityGroup
+  ]
 }
 
 resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
