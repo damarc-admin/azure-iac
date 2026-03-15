@@ -163,7 +163,7 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
     ]
     loadBalancingRules: [
       {
-        name: 'HTTP rule'
+        name: 'HTTPRule'
         properties: {
           protocol: 'Tcp'
           frontendPort: 80
@@ -176,7 +176,7 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
     ]
     probes: [
       {
-        name: 'HTTP probe'
+        name: 'HTTPProbe'
         properties: {
           protocol: 'Tcp'
           port: appServicePort
@@ -242,7 +242,7 @@ resource virtualMachine 'Microsoft.Compute/virtualMachines@2022-03-01' = {
       imageReference: {
         publisher: 'Canonical'
         offer: 'UbuntuServer'
-        sku: '22.04-LTS'
+        sku: 'ubuntu-24_04-lts'
         version: 'latest'
       }
       osDisk: {
