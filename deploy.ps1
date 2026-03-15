@@ -19,11 +19,18 @@ if (-not $account) {
     az login
 }
 
-Write-Host "Creating resource group..." -ForegroundColor Cyan
 $existingRg = az group show --name $ResourceGroup 2>$null
-if (-not $existingRg) {
-    az group create --name $ResourceGroup --location $Location --output none
+if ($existingRg) {
+    $rgLocation = ($existingRg | ConvertFrom-Json).location
+    if ($rgLocation -ne $Location) {
+        Write-Host "Deleting resource group in wrong location ($rgLocation)..." -ForegroundColor Yellow
+        az group delete --name $ResourceGroup --yes --no-wait
+        Start-Sleep -Seconds 5
+    }
 }
+
+Write-Host "Creating resource group..." -ForegroundColor Cyan
+az group create --name $ResourceGroup --location $Location --output none
 
 Write-Host "Deploying Azure resources..." -ForegroundColor Cyan
 az deployment group create `

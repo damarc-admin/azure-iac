@@ -11,6 +11,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Checking Azure CLI..."
 az account show > /dev/null 2>&1 || az login
 
+EXISTING_RG=$(az group show --name "$RESOURCE_GROUP" 2>/dev/null || echo "")
+if [ -n "$EXISTING_RG" ]; then
+    RG_LOCATION=$(echo "$EXISTING_RG" | jq -r '.location')
+    if [ "$RG_LOCATION" != "$LOCATION" ]; then
+        echo "Deleting resource group in wrong location ($RG_LOCATION)..."
+        az group delete --name "$RESOURCE_GROUP" --yes --no-wait
+        sleep 5
+    fi
+fi
+
 echo "Creating resource group..."
 az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
 
