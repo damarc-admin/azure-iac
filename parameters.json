@@ -9,7 +9,7 @@
       "value": "azureuser"
     },
     "adminPassword": {
-      "value": "REPLACE_WITH_YOUR_PASSWORD"
+      "value": "SecureAccessP123!"
     },
     "loadBalancerPrefix": {
       "value": "project-tracker"

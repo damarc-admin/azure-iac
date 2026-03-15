@@ -7,6 +7,13 @@ $Location = "canadacentral"
 $DeploymentName = "project-tracker-deployment"
 $ScriptDir = $PSScriptRoot
 
+if ($args -contains "-Cleanup" -or $args -contains "-c") {
+    Write-Host "Deleting resource group..." -ForegroundColor Yellow
+    az group delete --name $ResourceGroup --yes --no-wait
+    Write-Host "Resource group '$ResourceGroup' marked for deletion." -ForegroundColor Green
+    exit 0
+}
+
 if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
     Write-Host "Azure CLI is not installed." -ForegroundColor Red
     exit 1

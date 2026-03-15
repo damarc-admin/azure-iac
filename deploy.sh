@@ -8,6 +8,13 @@ DEPLOYMENT_NAME="project-tracker-deployment"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+if [ "$1" = "--cleanup" ] || [ "$1" = "-c" ]; then
+    echo "Deleting resource group..."
+    az group delete --name "$RESOURCE_GROUP" --yes --no-wait
+    echo "Resource group '$RESOURCE_GROUP' marked for deletion."
+    exit 0
+fi
+
 echo "Checking Azure CLI..."
 az account show > /dev/null 2>&1 || az login
 
