@@ -24,6 +24,49 @@ var vmSize = 'Standard_B2s'
 
 var appServicePort = 5000
 
+var installScript = '''
+#!/bin/bash
+set -e
+
+apt-get update
+apt-get install -y python3 python3-pip git
+
+cd /opt
+git clone https://github.com/damarc-admin/project-tracker.git --branch onboard --single-branch project-tracker
+
+cd /opt/project-tracker
+pip3 install -r requirements.txt
+
+cat > /opt/project-tracker/start.sh << 'SCRIPTEOF'
+#!/bin/bash
+cd /opt/project-tracker
+python3 app.py
+SCRIPTEOF
+chmod +x /opt/project-tracker/start.sh
+
+cat > /etc/systemd/system/project-tracker.service << 'SERVICEEOF'
+[Unit]
+Description=Project Tracker Flask Application
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/project-tracker
+ExecStart=/usr/bin/python3 /opt/project-tracker/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+SERVICEEOF
+
+systemctl daemon-reload
+systemctl enable project-tracker
+systemctl start project-tracker
+
+echo "Application deployed successfully"
+'''
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: vnetName
   location: location
@@ -118,17 +161,10 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
         name: 'BackendPool1'
       }
     ]
-    inboundNatRules: []
     loadBalancingRules: [
       {
-        name: 'HTTPRule'
+        name: 'HTTP rule'
         properties: {
-          frontendIPConfiguration: {
-            id: loadBalancer.properties.frontendIPConfigurations[0].id
-          }
-          backendAddressPool: {
-            id: loadBalancer.properties.backendAddressPools[0].id
-          }
           protocol: 'Tcp'
           frontendPort: 80
           backendPort: appServicePort
@@ -140,7 +176,7 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2023-04-01' = {
     ]
     probes: [
       {
-        name: 'HTTPProbe'
+        name: 'HTTP probe'
         properties: {
           protocol: 'Tcp'
           port: appServicePort
@@ -242,60 +278,8 @@ resource customScriptExtension 'Microsoft.Compute/virtualMachines/extensions@202
     typeHandlerVersion: '2.1'
     settings: {
       commandToExecute: 'bash -c "${installScript}"'
-      protectedSettings: {
-        commandToExecute: 'bash -c "${installScript}"'
-      }
     }
   }
 }
 
-var installScript = '''
-#!/bin/bash
-set -e
-
-# Update and install Python
-apt-get update
-apt-get install -y python3 python3-pip git
-
-# Clone the application repository
-cd /opt
-git clone https://github.com/damarc-admin/project-tracker.git --branch onboard --single-branch project-tracker
-
-# Install Python dependencies
-cd /opt/project-tracker
-pip3 install -r requirements.txt
-
-# Create startup script
-cat > /opt/project-tracker/start.sh << 'EOF'
-#!/bin/bash
-cd /opt/project-tracker
-python3 app.py
-EOF
-chmod +x /opt/project-tracker/start.sh
-
-# Create systemd service
-cat > /etc/systemd/system/project-tracker.service << 'EOF'
-[Unit]
-Description=Project Tracker Flask Application
-After=network.target
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/opt/project-tracker
-ExecStart=/usr/bin/python3 /opt/project-tracker/app.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload
-systemctl enable project-tracker
-systemctl start project-tracker
-
-echo "Application deployed successfully"
-'''
-
 output publicIPAddress string = publicIpAddress.properties.ipAddress
-output loadBalancerFrontendIP string = reference(loadBalancer.id).frontendIPConfigurations[0].properties.publicIPAddress.properties.ipAddress
