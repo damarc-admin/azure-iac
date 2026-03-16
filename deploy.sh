@@ -8,6 +8,9 @@ DEPLOYMENT_NAME="project-tracker-deployment"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Record start time
+START_TIME=$(date +%s)
+
 if [ "$1" = "--cleanup" ] || [ "$1" = "-c" ]; then
     echo "Deleting resource group..."
     az group delete --name "$RESOURCE_GROUP" --yes --no-wait
@@ -49,11 +52,19 @@ PUBLIC_IP=$(az network public-ip show \
     --query ipAddress \
     --output tsv)
 
+# Calculate elapsed time
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+MINUTES=$((ELAPSED / 60))
+SECONDS=$((ELAPSED % 60))
+
 echo ""
 echo "==================================="
 echo "Deployment Complete!"
 echo "==================================="
 echo "Access the application at: http://$PUBLIC_IP:5000"
+echo ""
+echo "Total deployment time: ${MINUTES}m ${SECONDS}s"
 echo ""
 echo "To check VM status:"
 echo "  az vm show -g $RESOURCE_GROUP -n project-tracker-vm"

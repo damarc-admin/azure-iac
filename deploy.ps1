@@ -7,6 +7,9 @@ $Location = "canadacentral"
 $DeploymentName = "project-tracker-deployment"
 $ScriptDir = $PSScriptRoot
 
+# Record start time
+$StartTime = Get-Date
+
 if ($args -contains "-Cleanup" -or $args -contains "-c") {
     Write-Host "Deleting resource group..." -ForegroundColor Yellow
     az group delete --name $ResourceGroup --yes --no-wait
@@ -57,8 +60,15 @@ $publicIp = az network public-ip show `
     --query ipAddress `
     --output tsv
 
+# Calculate elapsed time
+$EndTime = Get-Date
+$Elapsed = $EndTime - $StartTime
+$Minutes = [math]::Floor($Elapsed.TotalMinutes)
+$Seconds = [math]::Round($Elapsed.TotalSeconds % 60)
+
 Write-Host ""
 Write-Host "===================================" -ForegroundColor Green
 Write-Host "Deployment Complete!" -ForegroundColor Green
 Write-Host "===================================" -ForegroundColor Green
 Write-Host "Access the application at: http://$publicIp`:5000" -ForegroundColor Cyan
+Write-Host "Total deployment time: ${Minutes}m ${Seconds}s" -ForegroundColor Yellow
