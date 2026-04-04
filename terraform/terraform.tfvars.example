@@ -1,0 +1,93 @@
+# =============================================================================
+# Terraform Variables - Project Tracker VM Deployment
+# =============================================================================
+# Copy this file to terraform.tfvars and update values as needed
+# Usage: cp terraform.tfvars.example terraform.tfvars
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# REQUIRED: Authentication
+# ---------------------------------------------------------------------------
+
+# Administrator password for the virtual machine
+# This password is used for both SSH and direct VM access
+# Password requirements:
+#   - Minimum 12 characters
+#   - Must contain uppercase letters (A-Z)
+#   - Must contain lowercase letters (a-z)
+#   - Must contain numbers (0-9)
+#   - Must contain special characters (!,@,#,$,%,^,&,*, etc.)
+admin_password = "REPLACE_WITH_YOUR_PASSWORD"
+
+# SSH public key for authentication (optional)
+# Leave empty to auto-generate an RSA key pair
+# To use your own key, paste the contents of ~/.ssh/id_rsa.pub
+# Format: "ssh-rsa AAAA..."
+# ssh_public_key = ""
+
+# ---------------------------------------------------------------------------
+# Resource Configuration
+# ---------------------------------------------------------------------------
+
+# Azure region where resources will be deployed
+# Common values:
+#   canadacentral     - Canada (recommended for Canadian projects)
+#   eastus           - East US
+#   westus2          - West US 2
+#   uksouth          - UK South
+#   westeurope       - West Europe
+location = "canadacentral"
+
+# Name of the resource group (will be created if not exists)
+resource_group_name = "project-tracker-rg"
+
+# ---------------------------------------------------------------------------
+# Naming Conventions
+# ---------------------------------------------------------------------------
+
+# Prefix for all resource names
+# Use this for multiple environment deployments
+# Example: "project-tracker-prod", "project-tracker-dev"
+prefix = "project-tracker"
+
+# DNS label for the public IP address
+# Creates fully qualified domain name (FQDN):
+#   <dns_label>.<location>.cloudapp.azure.com
+# Must be unique within the Azure region
+dns_label = "project-tracker"
+
+# ---------------------------------------------------------------------------
+# Virtual Machine Configuration
+# ---------------------------------------------------------------------------
+
+# VM size determines CPU, memory, and disk capacity
+# Common sizes:
+#   Standard_B2s      - 2 vCPU, 4GB RAM (burstable, cost-effective)
+#   Standard_D2s_v3   - 2 vCPU, 8GB RAM (general purpose, RECOMMENDED)
+#   Standard_D4s_v3   - 4 vCPU, 16GB RAM (larger workloads)
+#   Standard_F2s_v2  - 2 vCPU, 4GB RAM (compute optimized)
+vm_size = "Standard_D2s_v3"
+
+# Administrator username for the VM
+# Note: 'admin', 'root', 'administrator' are reserved and not allowed
+admin_username = "azureuser"
+
+# ---------------------------------------------------------------------------
+# Tags
+# ---------------------------------------------------------------------------
+# Tags are metadata applied to all resources for organization and billing
+
+tags = {
+  # Environment: Production, Staging, Development, etc.
+  Environment = "Production"
+  
+  # Application name for resource grouping
+  Application = "Project Tracker"
+  
+  # Automation tool managing these resources
+  ManagedBy = "Terraform"
+  
+  # Optional: Add your own tags
+  # CostCenter = "Engineering"
+  # Owner = "team@company.com"
+}
