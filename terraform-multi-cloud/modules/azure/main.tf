@@ -218,7 +218,7 @@ resource "azurerm_virtual_machine_extension" "main" {
   type                         = "CustomScript"
   type_handler_version         = "2.1"
 
-  settings = jsonencode({
+  protected_settings = jsonencode({
     commandToExecute = <<-EOF
       #!/bin/bash
       set -e
@@ -246,10 +246,6 @@ SERVICEEOF
       systemctl enable project-tracker
       systemctl start project-tracker
     EOF
-  })
-
-  protected_settings = jsonencode({
-    commandToExecute = "bash"
   })
 }
 
