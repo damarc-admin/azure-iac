@@ -5,12 +5,8 @@
 // 
 // Usage:
 //   terraform init
-//   terraform workspace new aws     # Create workspace for AWS
-//   terraform workspace new azure  # Create workspace for Azure
-//   terraform workspace new gcp    # Create workspace for GCP
-//   terraform workspace select aws  # Select target cloud
 //   terraform plan -var-file=aws.tfvars
-//   terraform apply
+//   terraform apply -var-file=aws.tfvars
 // =============================================================================
 
 terraform {
@@ -39,14 +35,9 @@ terraform {
 // =============================================================================
 // AWS Provider Configuration
 // =============================================================================
-// Uses default credentials from environment or ~/.aws/credentials
 provider "aws" {
-  region = var.aws_region
-
-  # Optional: Use profile from AWS credentials file
-  # profile = "default"
-
-  alias = "aws"
+  region = var.enable_aws ? var.aws_region : "us-east-1"
+  alias  = "aws"
 }
 
 // =============================================================================
@@ -54,25 +45,21 @@ provider "aws" {
 // =============================================================================
 provider "azurerm" {
   features {}
-
   alias = "azure"
 }
 
 // =============================================================================
 // GCP Provider Configuration
 // =============================================================================
-// Uses Application Default Credentials (gcloud auth application-default login)
 provider "google" {
-  project = var.gcp_project_id
+  project = var.enable_gcp ? var.gcp_project_id : "placeholder-project"
   region  = var.gcp_region
-
-  alias = "gcp"
+  alias   = "gcp"
 }
 
 // =============================================================================
 // Random ID for Unique Naming
 // =============================================================================
-// Generates a random ID to ensure unique resource names across clouds
 resource "random_id" "main" {
   byte_length = 4
   prefix      = "pt-"
@@ -81,7 +68,6 @@ resource "random_id" "main" {
 // =============================================================================
 // AWS Resources
 // =============================================================================
-// Deploys to Amazon Web Services
 module "aws_deployment" {
   source = "./modules/aws"
 
@@ -103,7 +89,6 @@ module "aws_deployment" {
 // =============================================================================
 // Azure Resources
 // =============================================================================
-// Deploys to Microsoft Azure
 module "azure_deployment" {
   source = "./modules/azure"
 
@@ -125,7 +110,6 @@ module "azure_deployment" {
 // =============================================================================
 // GCP Resources
 // =============================================================================
-// Deploys to Google Cloud Platform
 module "gcp_deployment" {
   source = "./modules/gcp"
 
@@ -135,13 +119,13 @@ module "gcp_deployment" {
 
   count = var.enable_gcp ? 1 : 0
 
-  prefix      = var.prefix
-  region      = var.gcp_region
+  prefix       = var.prefix
+  region       = var.gcp_region
   machine_type = var.gcp_machine_type
-  app_port    = var.app_port
-  ssh_cidr    = var.ssh_cidr
-  app_cidr    = var.app_cidr
-  random_id   = random_id.main.hex
+  app_port     = var.app_port
+  ssh_cidr     = var.ssh_cidr
+  app_cidr     = var.app_cidr
+  random_id    = random_id.main.hex
 }
 
 // =============================================================================
@@ -153,8 +137,8 @@ output "deployment_summary" {
   value = {
     aws = var.enable_aws ? {
       enabled   = true
-      public_ip = try(module.aws_deployment[0].public_ip, null)
-      url       = try("http://${module.aws_deployment[0].public_ip}:${var.app_port}", null)
+      public_ip = module.aws_deployment[0].public_ip
+      url       = "http://${module.aws_deployment[0].public_ip}:${var.app_port}"
     } : {
       enabled   = false
       public_ip = null
@@ -163,8 +147,8 @@ output "deployment_summary" {
 
     azure = var.enable_azure ? {
       enabled   = true
-      public_ip = try(module.azure_deployment[0].public_ip, null)
-      url       = try("http://${module.azure_deployment[0].public_ip}:${var.app_port}", null)
+      public_ip = module.azure_deployment[0].public_ip
+      url       = "http://${module.azure_deployment[0].public_ip}:${var.app_port}"
     } : {
       enabled   = false
       public_ip = null
@@ -173,8 +157,8 @@ output "deployment_summary" {
 
     gcp = var.enable_gcp ? {
       enabled   = true
-      public_ip = try(module.gcp_deployment[0].public_ip, null)
-      url       = try("http://${module.gcp_deployment[0].public_ip}:${var.app_port}", null)
+      public_ip = module.gcp_deployment[0].public_ip
+      url       = "http://${module.gcp_deployment[0].public_ip}:${var.app_port}"
     } : {
       enabled   = false
       public_ip = null
